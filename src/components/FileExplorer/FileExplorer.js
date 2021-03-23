@@ -8,10 +8,14 @@ const FileExplorer = (props) => {
     props.changeIndex(activeFile);
   }, [activeFile]);
 
+  useEffect(() => {
+    highlightNewFile()
+  }, [props.files]);
+
   return (
     <div>
       {props.files.map((file, index) => (
-        <div class='fileDiv' onClick={(e) => handleClick(index, e)} >{file.name}</div> 
+        <div className='fileDiv' key={index} onClick={(e) => handleClick(index, e)} >{file.name}</div> 
       ))}
     </div>  
   );
@@ -19,7 +23,13 @@ const FileExplorer = (props) => {
   function handleClick(index, e) {
     document.getElementsByClassName('fileDiv')[activeFile].style.background = 'none';
     e.target.style.background = 'yellow';
-    setActiveFile(index)
+    setActiveFile(index);
+  }
+
+  function highlightNewFile() {
+    document.getElementsByClassName('fileDiv')[activeFile].style.background = 'none';
+    document.getElementsByClassName('fileDiv')[props.files.length - 1].style.background = 'yellow';
+    setActiveFile(props.files.length - 1)
   }
 }
 
