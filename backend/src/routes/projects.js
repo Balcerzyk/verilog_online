@@ -8,6 +8,7 @@ export default () => {
     api.get('/:slug', catchAsync(controller.findOne));
     api.get('/', catchAsync(controller.findAll));
     api.post('/', catchAsync(controller.create));
+    api.post('/execute/:slug', catchAsync(controller.execute));
     api.put('/:slug', catchAsync(controller.update));
     api.delete('/:slug', catchAsync(controller.delete));
 

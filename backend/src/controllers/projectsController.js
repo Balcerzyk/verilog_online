@@ -1,5 +1,6 @@
 import Project from '../models/project.js';
 import fs from "fs";
+import { exec } from 'child_process';
 
 const projectsPath = "./users_projects"
 
@@ -40,5 +41,24 @@ export default {
     },
     async delete(req, res) {
         
+    },
+
+    async execute(req, res) {
+        
+        exec(`cd users_projects/aaaq && verilator -Wall --cc our.v --exe --build sim_main.cpp`, (err, stdout, stderr) => {
+            if (err) {
+                res.send(stderr)
+                return;
+            }
+            exec(`cd users_projects/aaaq/obj_dir && ./Vour`, (err, stdout, stderr) => {
+                if (err) {
+                  res.send(stderr)
+                  return;
+                }
+                res.send(stdout)
+                return;
+              });
+            return;
+          });        
     }
 }

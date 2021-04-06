@@ -64,7 +64,7 @@ function App() {
     let data  = new FormData();
     data.append('projectslug', projectName)
     for(let i=0; i<files.length; i++) {
-      data.append('files', new Blob([files[i].content]), files[i].name + '.v')
+      data.append('files', new Blob([files[i].content]), files[i].name)
     }
     
     let url = 'http://localhost:8080/api/files';
