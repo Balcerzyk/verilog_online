@@ -5,12 +5,12 @@ import { catchAsync } from '../middlewares/errors.js';
 export default () => {
     const api = Router();
 
-    api.get('/:slug', catchAsync(controller.findOne));
+    api.get('/:id', catchAsync(controller.findOne));
     api.get('/', catchAsync(controller.findAll));
     api.post('/', catchAsync(controller.create));
-    api.post('/execute/:slug', catchAsync(controller.execute));
-    api.put('/:slug', catchAsync(controller.update));
-    api.delete('/:slug', catchAsync(controller.delete));
+    api.post('/execute/:id', catchAsync(controller.execute));
+    api.put('/:id', catchAsync(controller.update));
+    api.delete('/:id', catchAsync(controller.delete));
 
     return api;
 }

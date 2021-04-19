@@ -4,6 +4,7 @@ import FileExplorer from './components/FileExplorer/FileExplorer'
 import Editor from "./components/Editor/Editor";
 import CreateProjectBox from "./components/CreateProjectBox/CreateProjectBox";
 import CreateFileBox from "./components/CreateFileBox/CreateFileBox";
+import ProjectsList from "./components/ProjectsList/ProjectsList";
 
 import './App.css'
 
@@ -12,6 +13,7 @@ function App() {
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [files, setFiles] = useState([]);
   const [projectName, setProjectName] = useState('');
+  const [projectId, setProjectId] = useState('');
   const [showCreateFileBox, setShowCreateFileBox] = useState(false);
   const [showCreateProjectBox, setShowCreateProjectBox] = useState(false);
 
@@ -19,7 +21,10 @@ function App() {
     <div className="App">
       {
         !projectName && 
-        <button onClick={() => {setShowCreateProjectBox(true)}}>create new project</button>
+        <div>
+          <button onClick={() => {setShowCreateProjectBox(true)}}>create new project</button>
+          <ProjectsList setProject = {setProject}/>
+        </div>
       }
       {
         projectName &&
@@ -29,6 +34,7 @@ function App() {
         files.length > 0 &&
         <div>
           {projectName}
+          {projectId}
           <button onClick={sendFiles}>send</button>
           <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
           <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="javascript" />
@@ -60,9 +66,27 @@ function App() {
     setShowCreateFileBox(false)   
   }
 
+  function setProject(project) {
+    setProjectName(project.name);
+    setProjectId(project._id)
+
+    console.log(project.files.length)
+    for(let i=0; i<project.files.length; i++) {
+      let url = `http://localhost:8080/api/files/${project.files[i].fileid}`;
+      console.log(url)
+
+      fetch(url, {
+        method: 'GET',
+      }).then(response => response.json())
+      .then(response => {
+        console.log(response.data)
+      });
+    }
+  }
+
   function sendFiles(){
     let data  = new FormData();
-    data.append('projectslug', projectName)
+    data.append('projectId', projectId)
     for(let i=0; i<files.length; i++) {
       data.append('files', new Blob([files[i].content]), files[i].name)
     }
@@ -86,9 +110,10 @@ function App() {
     fetch(url, {
       method: 'POST',
       body: data,
-    }).then((response) => {
-      console.log(response)
-    })
+    }).then(response => response.json())
+    .then(response => {
+      setProjectId(response.data._id)
+    });
 
     setProjectName(projectName)
     setShowCreateProjectBox(false)

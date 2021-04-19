@@ -6,7 +6,7 @@ const projectsPath = "./users_projects"
 
 export default {
     async findOne(req, res, next) {
-        const project = await Project.find({slug: req.params.slug});
+        const project = await Project.find({id: req.params.id});
         if(!project) return next();
         return res.status(200).send({data: project});
     },
@@ -25,13 +25,12 @@ export default {
         const project = await new Project({
             name: req.body.name,
             userid: req.body.userid,
-            structure: req.body.structure,
-            files: req.body.files,
+            files: []
         }).save();
 
         console.log(project)
-        fs.mkdirSync(projectsPath + '/' + project.slug);
-        console.log(`project '${project.slug}' created.`);
+        fs.mkdirSync(projectsPath + '/' + project._id);
+        console.log(`project '${project._id}' created.`);
 
         return res.status(201).send({ data: project, message: `Project was created` });
     },
@@ -44,7 +43,7 @@ export default {
     },
 
     async execute(req, res) {
-        
+        console.log(res.body.name)
         exec(`cd users_projects/aaaq && verilator -Wall --cc our.v --exe --build sim_main.cpp`, (err, stdout, stderr) => {
             if (err) {
                 res.send(stderr)
