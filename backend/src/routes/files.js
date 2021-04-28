@@ -19,6 +19,7 @@ export default () => {
 
     api.get('/:id', catchAsync(controller.findOne));
     api.get('/', catchAsync(controller.findAll));
+    api.get('/getContent/:id', catchAsync(controller.getContent));
     api.post('/', upload.array('files', 12), catchAsync(controller.create));
     api.put('/:id', catchAsync(controller.update));
     api.delete('/:id', catchAsync(controller.delete));

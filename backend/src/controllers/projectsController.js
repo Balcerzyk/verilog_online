@@ -43,13 +43,29 @@ export default {
     },
 
     async execute(req, res) {
-        console.log(res.body.name)
-        exec(`cd users_projects/aaaq && verilator -Wall --cc our.v --exe --build sim_main.cpp`, (err, stdout, stderr) => {
+        // console.log(res.body.name)
+        // exec(`cd users_projects/aaaq && verilator -Wall --cc our.v --exe --build sim_main.cpp`, (err, stdout, stderr) => {
+        //     if (err) {
+        //         res.send(stderr)
+        //         return;
+        //     }
+        //     exec(`cd users_projects/aaaq/obj_dir && ./Vour`, (err, stdout, stderr) => {
+        //         if (err) {
+        //           res.send(stderr)
+        //           return;
+        //         }
+        //         res.send(stdout)
+        //         return;
+        //       });
+        //     return;
+        //   }); 
+
+        exec(`cd users_projects/608955be6bfb5f16eac8c4c0 && verilator -Wall --sc --exe sc_main.cpp our.v && make -j -C obj_dir -f Vour.mk Vour`, (err, stdout, stderr) => {
             if (err) {
                 res.send(stderr)
                 return;
             }
-            exec(`cd users_projects/aaaq/obj_dir && ./Vour`, (err, stdout, stderr) => {
+            exec(`cd users_projects/608955be6bfb5f16eac8c4c0/obj_dir && ./Vour`, (err, stdout, stderr) => {
                 if (err) {
                   res.send(stderr)
                   return;
@@ -58,6 +74,8 @@ export default {
                 return;
               });
             return;
-          });        
+          }); 
+
+        //res.send('wyniczek')       
     }
 }

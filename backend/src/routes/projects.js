@@ -7,8 +7,8 @@ export default () => {
 
     api.get('/:id', catchAsync(controller.findOne));
     api.get('/', catchAsync(controller.findAll));
+    api.get('/execute/:id', catchAsync(controller.execute));
     api.post('/', catchAsync(controller.create));
-    api.post('/execute/:id', catchAsync(controller.execute));
     api.put('/:id', catchAsync(controller.update));
     api.delete('/:id', catchAsync(controller.delete));
 

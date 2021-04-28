@@ -12,7 +12,7 @@ import React, { useState } from 'react';
             projects &&
             projects.map((element, index) => {     
                 return (
-                    <div onClick={() => selectProject(index)}>
+                    <div onClick={() => selectProject(index)} key={index}>
                         {element.name}
                     </div>
                 ) 
@@ -29,7 +29,6 @@ import React, { useState } from 'react';
           method: 'GET',
         }).then(response => response.json())
         .then(response => {
-            console.log(response.data)
             setProjects(response.data)
         });
       }

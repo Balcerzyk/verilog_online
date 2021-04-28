@@ -5,6 +5,7 @@ import Editor from "./components/Editor/Editor";
 import CreateProjectBox from "./components/CreateProjectBox/CreateProjectBox";
 import CreateFileBox from "./components/CreateFileBox/CreateFileBox";
 import ProjectsList from "./components/ProjectsList/ProjectsList";
+import ExecutionResult from "./components/ExecutionResult/ExecutionResult"
 
 import './App.css'
 
@@ -38,6 +39,7 @@ function App() {
           <button onClick={sendFiles}>send</button>
           <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
           <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="javascript" />
+          <ExecutionResult />
         </div>
       }
       {
@@ -70,16 +72,29 @@ function App() {
     setProjectName(project.name);
     setProjectId(project._id)
 
-    console.log(project.files.length)
     for(let i=0; i<project.files.length; i++) {
       let url = `http://localhost:8080/api/files/${project.files[i].fileid}`;
-      console.log(url)
 
+      let newFile = {
+        name: '',
+        content: ''
+      }
+      
       fetch(url, {
         method: 'GET',
       }).then(response => response.json())
       .then(response => {
-        console.log(response.data)
+        newFile.name = response.data.name;
+      });
+
+      url = `http://localhost:8080/api/files/getContent/${project.files[i].fileid}`;
+
+      fetch(url, {
+        method: 'GET',
+      }).then(response => response.text())
+      .then((body) => {
+        newFile.content = body;
+        setFiles(oldArray => [...oldArray, newFile]);
       });
     }
   }
@@ -96,9 +111,7 @@ function App() {
     fetch(url, {
       method: 'POST',
       body: data,
-    }).then((response) => {
-      console.log(response)
-    })
+    }).then((response) => {})
   }
 
   function createProject(projectName) {
