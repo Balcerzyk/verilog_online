@@ -22,7 +22,6 @@ const CreateFileBox = (props) => {
 
 }
 
-
 export default CreateFileBox;
 
 

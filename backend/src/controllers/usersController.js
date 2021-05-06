@@ -1,6 +1,25 @@
-import User from '../models/user.js'
+import User from '../models/user.js';
+import jwt from 'jsonwebtoken';
 
 export default {
+    async login(req, res, next) {
+        console.log('lel')
+        const token = jwt.sign({id: req.user._id}, process.env.JWT_SECRET, {expiresIn: 1200});
+        return res.send({token})
+        
+    },
+    async register(req, res, next) {
+        const {username, password} = req.body;
+        const user = await new User({
+            username: username
+        })
+
+        await User.register(user, password)
+
+        return res.status(200).send('User created');
+        
+    },
+
     async findOne(req, res, next) {
         const user = await User.find({slug: req.params.slug});
         if(!user) return next();

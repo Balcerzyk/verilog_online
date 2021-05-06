@@ -1,9 +1,8 @@
 .code-edit-container {
     position: relative;
     height: 500px;
-    border: 1px solid hsl(0, 0%, 60%);
-    background-color: hsl(212, 35%, 95%);
-    margin: 1em 0;
+    background-color: rgb(40, 40, 40);
+    margin: 20px auto 30px auto;
   }
   
   .code-input,
@@ -14,6 +13,7 @@
     width: 100%;
     height: 100%;
     padding: 1rem;
+
     border: none;
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     font-size: 0.8rem;
@@ -22,6 +22,8 @@
     line-height: 1.5em;
     word-wrap: break-word;
     font-size: 1rem;
+  } :focus {
+    outline: -webkit-focus-ring-color auto 0px;
   }
   
   .code-input {
@@ -55,4 +57,7 @@
   .code-edit-container pre[class*="language-"] {
     background: transparent;
     margin: 0;
+    overflow: scroll;
   }
+
+  

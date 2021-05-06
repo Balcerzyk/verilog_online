@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import controller from '../controllers/filesController.js';
 import { catchAsync } from '../middlewares/errors.js';
+import jwtAuthentication from '../middlewares/auth.js'
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -17,12 +18,12 @@ var upload = multer({ storage: storage })
 export default () => {
     const api = Router();
 
-    api.get('/:id', catchAsync(controller.findOne));
-    api.get('/', catchAsync(controller.findAll));
-    api.get('/getContent/:id', catchAsync(controller.getContent));
-    api.post('/', upload.array('files', 12), catchAsync(controller.create));
-    api.put('/:id', catchAsync(controller.update));
-    api.delete('/:id', catchAsync(controller.delete));
+    api.get('/:id', jwtAuthentication, catchAsync(controller.findOne));
+    api.get('/', jwtAuthentication, catchAsync(controller.findAll));
+    api.get('/getContent/:id', jwtAuthentication, catchAsync(controller.getContent));
+    api.post('/', jwtAuthentication, upload.array('files', 12), catchAsync(controller.create));
+    api.put('/:id', jwtAuthentication, catchAsync(controller.update));
+    api.delete('/:id', jwtAuthentication, catchAsync(controller.delete));
 
     return api;
 }

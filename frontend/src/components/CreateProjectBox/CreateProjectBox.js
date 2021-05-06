@@ -18,7 +18,6 @@ const CreateProjectBox = (props) => {
 
 }
 
-
 export default CreateProjectBox;
 
 

@@ -1,9 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config({path: '.env'});
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import passport from './config/passport.js';
 
 // config
 import config from './config/config.js';
@@ -18,6 +21,8 @@ import projects from './routes/projects.js'
 import files from './routes/files.js'
 
 console.log('Starting server...')
+
+passport();
 
 await mongoose.connect(databaseConfig.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
 mongoose.connection.on('error', (err) => {

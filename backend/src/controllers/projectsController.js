@@ -15,7 +15,7 @@ export default {
         return res.status(200).send({ data: projects });
     },
     async create(req, res) {
-        console.log(req.body.name)
+        console.log(req.user)
         if (!fs.existsSync(projectsPath)) {
             console.log("directory 'users_projects' doesn't exists");
             fs.mkdirSync(projectsPath);
@@ -28,7 +28,6 @@ export default {
             files: []
         }).save();
 
-        console.log(project)
         fs.mkdirSync(projectsPath + '/' + project._id);
         console.log(`project '${project._id}' created.`);
 
@@ -60,12 +59,12 @@ export default {
         //     return;
         //   }); 
 
-        exec(`cd users_projects/608955be6bfb5f16eac8c4c0 && verilator -Wall --sc --exe sc_main.cpp our.v && make -j -C obj_dir -f Vour.mk Vour`, (err, stdout, stderr) => {
+        exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop
             if (err) {
                 res.send(stderr)
                 return;
             }
-            exec(`cd users_projects/608955be6bfb5f16eac8c4c0/obj_dir && ./Vour`, (err, stdout, stderr) => {
+            exec(`cd users_projects/${req.params.id}/obj_dir && ./Vtop`, (err, stdout, stderr) => {
                 if (err) {
                   res.send(stderr)
                   return;

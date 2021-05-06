@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
- 
+import React, { useState } from 'react';
+
+import config from "../../config.json";
+import { sendRequest } from '../../utils';
+
 const ExecutionResult = (props) => {
 
   const [result, setResult] = useState('none');
@@ -13,13 +16,14 @@ const ExecutionResult = (props) => {
   );
 
   function execute() {
-    let url = `http://localhost:8080/api/projects/execute/${props.projectid}`;
-  
     setResult('please wait')
 
-    fetch(url, {
-      method: 'GET',
-    }).then(response => response.text())
+    let requestObject = {
+      url: `${config.SERVER_URL}/api/projects/execute/${props.projectId}`, 
+      method: 'GET', 
+      headers: [{name: 'Authorization', value: `Bearer ${props.user.token}`}]
+    }
+    sendRequest(requestObject).then(response => response.text())
     .then((body) => {
       setResult(body)
     });

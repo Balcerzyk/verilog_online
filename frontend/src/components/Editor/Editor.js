@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Prism from "prismjs";
+import "prismjs/components/prism-verilog.js";
 import "prismjs/themes/prism-tomorrow.css";
 import "../Editor/Editor.css"
 
@@ -43,6 +44,7 @@ const Editor = props => {
         value={content}
         onChange={evt => setContent(evt.target.value)}
         onKeyDown={handleKeyDown}
+        spellCheck="false"
       />
       <pre className="code-output">
         <code className={`language-${props.language}`}>{content}</code>

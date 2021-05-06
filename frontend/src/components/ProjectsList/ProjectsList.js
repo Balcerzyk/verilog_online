@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+import config from "../../config.json";
+import { sendRequest } from '../../utils';
+
   const ProjectsList = (props) => {
 
     const [projects, setProjects] = useState();
@@ -22,12 +25,13 @@ import React, { useState } from 'react';
     );
   
     function getAllProjects() {
-
-        let url = 'http://localhost:8080/api/projects';
-    
-        fetch(url, {
-          method: 'GET',
-        }).then(response => response.json())
+        let requestObject = {
+          url: `${config.SERVER_URL}/api/projects`, 
+          method: 'GET', 
+          headers: [{name: 'Authorization', value: `Bearer ${props.user.token}`}]
+        }
+        sendRequest(requestObject)
+        .then(response => response.json())
         .then(response => {
             setProjects(response.data)
         });

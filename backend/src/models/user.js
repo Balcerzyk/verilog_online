@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import URLSlugs from 'mongoose-url-slugs';
+import passportLocalMongoose from 'passport-local-mongoose'
 
 const User = mongoose.Schema({
     username: String,
@@ -8,6 +8,6 @@ const User = mongoose.Schema({
     timestamps: true
 })
 
-User.plugin(URLSlugs('username', {field: 'slug', update: true}));
+User.plugin(passportLocalMongoose, {usernameField: 'username'})
 
 export default mongoose.model("User", User);

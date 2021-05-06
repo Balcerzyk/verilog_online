@@ -6,11 +6,15 @@ import CreateProjectBox from "./components/CreateProjectBox/CreateProjectBox";
 import CreateFileBox from "./components/CreateFileBox/CreateFileBox";
 import ProjectsList from "./components/ProjectsList/ProjectsList";
 import ExecutionResult from "./components/ExecutionResult/ExecutionResult"
+import LoginPage from "./components/LoginPage/LoginPage"
+import config from "./config.json";
+import { sendRequest, sendFiles } from './utils';
 
 import './App.css'
 
 function App() {
 
+  const [user, setUser] = useState();
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const [files, setFiles] = useState([]);
   const [projectName, setProjectName] = useState('');
@@ -21,25 +25,33 @@ function App() {
   return (
     <div className="App">
       {
+        !user && 
+        <LoginPage login = {loginUser}/>
+      }
+      {
+        user &&
         !projectName && 
         <div>
           <button onClick={() => {setShowCreateProjectBox(true)}}>create new project</button>
-          <ProjectsList setProject = {setProject}/>
+          <ProjectsList user={user} setProject = {setProject}/>
         </div>
       }
       {
-        projectName &&
-        <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
+        projectName && 
+        <div>
+          {projectName} <br/>
+          <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
+          <button onClick={sendUserFiles}>save project</button><br/>
+        </div>
+        
       }
       {
         files.length > 0 &&
         <div>
-          {projectName}
-          {projectId}
-          <button onClick={sendFiles}>send</button>
+          Files: <br/>
           <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
-          <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="javascript" />
-          <ExecutionResult />
+          <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
+          <ExecutionResult user={user} projectId={projectId}/>
         </div>
       }
       {
@@ -62,6 +74,10 @@ function App() {
     files[currentFileIndex].content = editorContent;
   }
 
+  function loginUser(user) {
+    setUser(user);
+  }
+
   function saveFile(createdFile) {  
     setCurrentFileIndex(files.length)
     setFiles(oldArray => [...oldArray, createdFile]);
@@ -73,63 +89,71 @@ function App() {
     setProjectId(project._id)
 
     for(let i=0; i<project.files.length; i++) {
-      let url = `http://localhost:8080/api/files/${project.files[i].fileid}`;
-
       let newFile = {
         name: '',
         content: ''
       }
       
-      fetch(url, {
-        method: 'GET',
-      }).then(response => response.json())
+      let requestObject = {
+        url: `${config.SERVER_URL}/api/files/${project.files[i].fileid}`, 
+        method: 'GET', 
+        headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
+      }
+      sendRequest(requestObject).then(response => response.json())
       .then(response => {
         newFile.name = response.data.name;
       });
 
-      url = `http://localhost:8080/api/files/getContent/${project.files[i].fileid}`;
-
-      fetch(url, {
-        method: 'GET',
-      }).then(response => response.text())
+      requestObject = {
+        url: `${config.SERVER_URL}/api/files/getContent/${project.files[i].fileid}`, 
+        method: 'GET', 
+        headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
+      }
+      sendRequest(requestObject).then(response => response.text())
       .then((body) => {
         newFile.content = body;
         setFiles(oldArray => [...oldArray, newFile]);
       });
+      
     }
   }
 
-  function sendFiles(){
+  function sendUserFiles(){
     let data  = new FormData();
     data.append('projectId', projectId)
     for(let i=0; i<files.length; i++) {
       data.append('files', new Blob([files[i].content]), files[i].name)
     }
-    
-    let url = 'http://localhost:8080/api/files';
 
-    fetch(url, {
-      method: 'POST',
-      body: data,
-    }).then((response) => {})
+    let requestObject = {
+      url: `${config.SERVER_URL}/api/files`, 
+      method: 'POST', 
+      headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
+      data: data
+    }
+    sendFiles(requestObject)
   }
 
   function createProject(projectName) {
-    let data  = new URLSearchParams();
-    data.append('name', projectName)
-
-    let url = 'http://localhost:8080/api/projects';
-
-    fetch(url, {
-      method: 'POST',
-      body: data,
-    }).then(response => response.json())
-    .then(response => {
-      setProjectId(response.data._id)
+    let requestObject = {
+      url: `${config.SERVER_URL}/api/projects`, 
+      method: 'POST', 
+      headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
+      data: [{name: 'name', value: projectName}]
+    }
+    sendRequest(requestObject)
+    .then(response => response.text())
+    .then(response => response.json())
+    .then(result => {
+        setProjectId(result.data._id);
+        setProjectName(projectName);
+        setShowCreateProjectBox(false);
+    })
+    .catch(error => {
+      setShowCreateProjectBox(false);
+      setUser(null);
+      console.log(error)
     });
-
-    setProjectName(projectName)
-    setShowCreateProjectBox(false)
   }
 }
 
