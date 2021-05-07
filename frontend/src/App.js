@@ -7,6 +7,7 @@ import CreateFileBox from "./components/CreateFileBox/CreateFileBox";
 import ProjectsList from "./components/ProjectsList/ProjectsList";
 import ExecutionResult from "./components/ExecutionResult/ExecutionResult"
 import LoginPage from "./components/LoginPage/LoginPage"
+import Waveforms from "./components/Waveforms/Waveforms"
 import config from "./config.json";
 import { sendRequest, sendFiles } from './utils';
 
@@ -39,6 +40,7 @@ function App() {
       {
         projectName && 
         <div>
+          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([])}}>back to menu</button>
           {projectName} <br/>
           <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
           <button onClick={sendUserFiles}>save project</button><br/>
@@ -52,19 +54,28 @@ function App() {
           <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
           <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
           <ExecutionResult user={user} projectId={projectId}/>
+          <Waveforms />
         </div>
       }
       {
         showCreateProjectBox &&
-        <CreateProjectBox createProject={createProject}/>
+        <CreateProjectBox visibility={setProjectBoxVisibility} createProject={createProject}/>
       }
       {
         showCreateFileBox &&
-        <CreateFileBox saveFile={saveFile}/>
+        <CreateFileBox visibility={setProjectFileVisibility} saveFile={saveFile}/>
       }
       
     </div>
   );
+
+  function setProjectBoxVisibility(visibility) {
+    setShowCreateProjectBox(visibility)
+  }
+
+  function setProjectFileVisibility(visibility) {
+    setShowCreateFileBox(visibility)
+  }
 
   function changeCurrentFileIndex(index) {
     setCurrentFileIndex(index);
@@ -142,7 +153,6 @@ function App() {
       data: [{name: 'name', value: projectName}]
     }
     sendRequest(requestObject)
-    .then(response => response.text())
     .then(response => response.json())
     .then(result => {
         setProjectId(result.data._id);
@@ -151,7 +161,6 @@ function App() {
     })
     .catch(error => {
       setShowCreateProjectBox(false);
-      setUser(null);
       console.log(error)
     });
   }

@@ -6,6 +6,7 @@ const CreateFileBox = (props) => {
     <div className = 'createFileScreen'>
         <div className = 'inputBox'>
             <input id='fileName' type='text'></input>
+            <button onClick={abort}>Abort</button>
             <button onClick={createFile}>Apply</button>
         </div>
     </div>
@@ -18,6 +19,10 @@ const CreateFileBox = (props) => {
         content: ''
       }
     props.saveFile(file);
+  }
+
+  function abort() {
+    props.visibility(false);
   }
 
 }
