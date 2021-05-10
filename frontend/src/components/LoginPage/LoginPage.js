@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import config from "../../config.json";
 import { sendRequest } from '../../utils';
 
+import './LoginPage.css'
+
 const LoginPage = (props) => {
 
     const [username, setUsername] = useState("");
@@ -10,27 +12,34 @@ const LoginPage = (props) => {
     const [error, setError] = useState("");
 
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Username</label>
+        <div className='formDiv'>
+            <a className='SignInText'>Sign in</a>
+            <form className='form' onSubmit={handleSubmit}>
+        
                 <input
+                className='usernameInput'
                 type="text"
                 name="username"
                 value={username}
                 onChange={handleChangeUsername}
                 placeholder="Username"/>
                 
-                <label htmlFor="password">Password</label>
                 <input
+                className='passwordInput'
                 type="password"
                 name="password"
                 value={password}
                 onChange={handleChangePassword}
                 placeholder="Password"/>
                 
-                {error}
-                <input type="submit" value="Login" />
+                <div className='errorDiv'> 
+                    {error}<br/>
+                </div>
+                <input className='submitButton' type="submit" value="Login" />
             </form>
+            <div className='signUpText'> 
+                <a>You do not have an account? </a><a className='link'>Sign up!</a>
+            </div>
         </div>
     );
 

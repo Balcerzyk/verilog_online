@@ -1,33 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import config from "../../config.json";
-import { sendRequest } from '../../utils';
+import './ExecutionResult.css'
 
 const ExecutionResult = (props) => {
 
   const [result, setResult] = useState('none');
 
+  useEffect(() => {
+    setResult(props.result)
+}, [props.result]);
+
   return (
-    <div>
-        <button onClick={execute}>Execute</button><br/><br/>
-        <a>Result:</a><br/>
-      {result}
+    <div className='executionResultDiv'>
+        <a className='resultText'>Result:</a>
+        <div className='executionResult'>{result}</div>
     </div>  
   );
-
-  function execute() {
-    setResult('please wait')
-
-    let requestObject = {
-      url: `${config.SERVER_URL}/api/projects/execute/${props.projectId}`, 
-      method: 'GET', 
-      headers: [{name: 'Authorization', value: `Bearer ${props.user.token}`}]
-    }
-    sendRequest(requestObject).then(response => response.text())
-    .then((body) => {
-      setResult(body)
-    });
-  }
 }
 
 

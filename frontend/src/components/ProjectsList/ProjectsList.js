@@ -1,22 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 
 import config from "../../config.json";
 import { sendRequest } from '../../utils';
+
+import './ProjectsList.css'
 
   const ProjectsList = (props) => {
 
     const [projects, setProjects] = useState();
 
+    useEffect(() => {
+      getAllProjects();
+    }, []);
+
     return (
-      <div className = 'projectsList'>
-          <button onClick={getAllProjects}>Edit existing project</button>
-          
+      <div className = 'projectsListDiv'>        
           {
             projects &&
             projects.map((element, index) => {     
                 return (
-                    <div onClick={() => selectProject(index)} key={index}>
-                        {element.name}
+                    <div className='projectDiv' key={index}>
+                      <svg className='projectSvg'>
+                        <rect className='projectRect' />
+                      </svg> 
+                      <a className='projectName'>{element.name}</a>
+                      <button className='editProjectButton' onClick={() => selectProject(index)}>Edit</button>        
                     </div>
                 ) 
             })

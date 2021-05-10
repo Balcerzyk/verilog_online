@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Prism from "prismjs";
 import "prismjs/components/prism-verilog.js";
 import "prismjs/themes/prism-tomorrow.css";
@@ -7,6 +7,7 @@ import "../Editor/Editor.css"
 const Editor = props => {
 
   const [content, setContent] = useState(props.file.content);
+  const [scroll, setScroll] = useState(0);
 
   useEffect(() => {
     setContent(props.file.content)
@@ -16,6 +17,10 @@ const Editor = props => {
     Prism.highlightAll();
     props.updateContent(content);
   }, [props.language, content]);
+
+  useEffect(() => {
+    document.getElementById('output').scrollTop = scroll;
+  }, [scroll]);
 
   const handleKeyDown = evt => {
     let value = content,
@@ -43,12 +48,17 @@ const Editor = props => {
         onChange={evt => setContent(evt.target.value)}
         onKeyDown={handleKeyDown}
         spellCheck="false"
+        onScroll={changeScroll}
       />
-      <pre className="code-output">
+      <pre id='output' className="code-output">
         <code className={`language-${props.language}`}>{content}</code>
-      </pre>
+      </pre> 
     </div>
   );
+
+  function changeScroll(e) {
+    setScroll(e.target.scrollTop);
+  }
 };
 
 export default Editor;

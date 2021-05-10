@@ -22,40 +22,14 @@ function App() {
   const [projectId, setProjectId] = useState('');
   const [showCreateFileBox, setShowCreateFileBox] = useState(false);
   const [showCreateProjectBox, setShowCreateProjectBox] = useState(false);
+  const [result, setResult] = useState('none');
+  const [shouldDraw, setShouldDraw] = useState(false);
 
   return (
     <div className="App">
       {
         !user && 
         <LoginPage login = {loginUser}/>
-      }
-      {
-        user &&
-        !projectName && 
-        <div>
-          <button onClick={() => {setShowCreateProjectBox(true)}}>create new project</button>
-          <ProjectsList user={user} setProject = {setProject}/>
-        </div>
-      }
-      {
-        projectName && 
-        <div>
-          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([])}}>back to menu</button>
-          {projectName} <br/>
-          <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
-          <button onClick={sendUserFiles}>save project</button><br/>
-        </div>
-        
-      }
-      {
-        files.length > 0 &&
-        <div>
-          Files: <br/>
-          <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
-          <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
-          <ExecutionResult user={user} projectId={projectId}/>
-          <Waveforms />
-        </div>
       }
       {
         showCreateProjectBox &&
@@ -65,6 +39,58 @@ function App() {
         showCreateFileBox &&
         <CreateFileBox visibility={setProjectFileVisibility} saveFile={saveFile}/>
       }
+      {
+        user &&
+        !projectName && 
+        <div className='appDiv'>
+          <div className='helloText'>
+            <a>Hello {user.username}!</a>
+          </div>
+          <div className='createProjectDiv'>
+            <svg className='createProjectSvg' onClick={() => {setShowCreateProjectBox(true)}}>
+              <rect className='createProjectRect' />
+            </svg> 
+          </div>
+          <div className='projectsText'>
+            <a>Here are your projects</a>
+            <svg className='projectsUnderlineSvg'>
+              <rect className='projectsUnderlineRect'/>
+            </svg>
+          </div>
+          <ProjectsList user={user} setProject = {setProject}/>
+        </div>
+      }
+      {
+        projectName && 
+        <div className='buttons'>
+          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([])}}>back to menu</button>
+          <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
+          <button onClick={sendUserFiles}>save project</button><br/>
+          <button onClick={execute}>Execute</button>
+        </div>
+        
+      }
+      {
+        files.length > 0 &&
+        <div className='codeEditorScreenDiv'>
+          <div className='menuLeft'>
+            <a className='menuProjectName'>{projectName}</a>
+            <svg className='projectNameUnderlineSvg'>
+              <rect className='projectNameUnderlineRect'/>
+            </svg>
+            <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
+          </div>
+          <div className='editorDiv'>
+            <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
+          </div>
+          <div className='results'>
+            <button className='executionButton' onClick={execute}>Execute</button>
+            <ExecutionResult user={user} projectId={projectId} result={result}/>
+            <Waveforms shouldDraw={shouldDraw}/>
+          </div>
+        </div>
+      }
+      
       
     </div>
   );
@@ -142,7 +168,7 @@ function App() {
       headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
       data: data
     }
-    sendFiles(requestObject)
+    return sendFiles(requestObject)
   }
 
   function createProject(projectName) {
@@ -161,6 +187,28 @@ function App() {
     })
     .catch(error => {
       setShowCreateProjectBox(false);
+      console.log(error)
+    });
+  }
+
+  async function execute() {
+    setResult('please wait')
+    setShouldDraw(false);
+
+    await sendUserFiles().then(function(response) {
+      let requestObject = {
+        url: `${config.SERVER_URL}/api/projects/execute/${projectId}`, 
+        method: 'GET', 
+        headers: [{name: 'Authorization', value: `Bearer ${user.token}`}]
+      }
+      sendRequest(requestObject).then(response => response.text())
+      .then((body) => {
+        setResult(body);
+        setShouldDraw(true);
+      }).catch(function(error) {
+        console.log(error)
+      });;
+    }).catch(function(error) {
       console.log(error)
     });
   }

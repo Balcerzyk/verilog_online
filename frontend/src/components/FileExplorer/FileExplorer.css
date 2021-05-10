@@ -1,0 +1,11 @@
+.fileExplorerDiv {
+    margin: 20px 2%;
+}
+
+.fileDiv {
+    margin: 5px auto;
+    padding: 3px 8px;
+    font-size: 18px;
+    color: white;
+    border-radius: 3px;;
+}

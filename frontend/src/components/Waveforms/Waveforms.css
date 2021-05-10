@@ -1,0 +1,19 @@
+.waveformsDiv {
+    width: 95%;
+    height: 55vh;
+    overflow: auto;
+    margin: auto;
+    border: solid 1px white;
+}
+
+.waveformsCanvasDiv {
+    display: flex;
+}
+
+.waveformsNames {
+    background: #1d222d;
+}
+
+.waveforms {
+    background: #1d222d;
+}

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+import './Waveforms.css'
 
 //todo timeunit
 //Canvas config
@@ -7,27 +9,35 @@ let waveFormNamesCanvasId = 'names';
 
 //Waveforms
 let waveformsHeight = 30;
-let distanceBetweenWaveforms = 50;
+let distanceBetweenWaveforms = 80;
 let offset = 0.5 * waveformsHeight
-let waveformsColor = 'red';
+let waveformsColor = '#63d297';
+let namesColor = 'white';
 let waveformsThickness = 2;
 let font = "20px Arial";
 
 //Graduation
 let graduationColor = 'rgba(220,220,220, 0.6)';
 let graudationThickness = 1;
-let graduationFontColor = 'rgba(100,100,100, 1)'
+let graduationFontColor = 'white'
 let graduationFont = '10px Arial';
 
 const Waveforms = (props) => {
 
+    useEffect(() => {
+        if(props.shouldDraw) {
+            draw();
+        } else {
+            clear();
+        }
+    }, [props.shouldDraw]);
+
   return (
     <div>
-        <button onClick={draw}>Print Waveforms</button>
-        <div style={{width: '930px', height: '500px', overflow: 'auto'}}>
-        <div style={{display: 'flex'}}>
-            <canvas id="names" height="2000" width="100" style={{border: '2px solid black'}}></canvas>
-            <canvas id="waveforms" height="2000" width="3000" style={{border: '2px solid black'}}></canvas>  
+        <div className='waveformsDiv'>
+        <div className='waveformsCanvasDiv'>
+            <canvas id="names" className='waveformsNames' height="2000" width="100" ></canvas>
+            <canvas id="waveforms" className='waveforms' height="2000" width="3000" ></canvas>  
         </div>
     </div> 
     </div>
@@ -42,6 +52,14 @@ const Waveforms = (props) => {
     });
     drawGraduation(times, timeUnit);
     
+}
+
+function clear() {
+    let canvas = document.getElementById(waveformCanvasId);
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+    canvas = document.getElementById(waveFormNamesCanvasId);
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function getWaveformsInformations(file) {
@@ -209,6 +227,7 @@ function drawNames(index, signal) {
     let ctx = getCanvasContext(waveFormNamesCanvasId);
     let baseY = index * distanceBetweenWaveforms + waveformsHeight + offset;
     
+    ctx.fillStyle = namesColor;
     ctx.font = font;
     ctx.fillText(signal.name, 10, baseY);
 }

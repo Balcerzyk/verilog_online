@@ -1,0 +1,18 @@
+.executionResultDiv {
+    width: 95%;
+    margin: auto;
+}
+
+.resultText {
+    color: white;
+}
+
+.executionResult {
+    height: 20vh;
+    border: solid 1px white;
+    color: white;
+    padding: 15px;
+    margin: 10px auto 10px auto;
+    background: #1d222d;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+}
