@@ -1,0 +1,18 @@
+.signUpText {
+    display: block;
+    color: white;
+    font-size: 30px;
+}
+
+.signInTextBottom {
+    color: white;
+    margin: 1rem auto;
+}
+
+.link {
+    color: #63d297;
+}
+
+.link:hover {
+    color: #a6ff00;
+}

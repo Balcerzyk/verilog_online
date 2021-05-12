@@ -3,17 +3,18 @@ import React, { useState, useEffect } from 'react';
 import config from "../../config.json";
 import { sendRequest } from '../../utils';
 
-import './LoginPage.css'
+import './RegisterPage.css'
 
-const LoginPage = (props) => {
+const RegisterPage = (props) => {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordRepeat, setPasswordRepeat] = useState("");
     const [error, setError] = useState("");
 
     return (
         <div className='formDiv'>
-            <a className='signInText'>Sign in</a>
+            <a className='signInText'>Sign up</a>
             <form className='form' onSubmit={handleSubmit}>
         
                 <input
@@ -31,14 +32,23 @@ const LoginPage = (props) => {
                 value={password}
                 onChange={handleChangePassword}
                 placeholder="Password"/>
+
+                <input
+                className='passwordInput'
+                type="password"
+                name="passwordRepeat"
+                value={passwordRepeat}
+                onChange={handleChangePasswordRepeat}
+                placeholder="Repeat password"/>
                 
                 <div className='errorDiv'> 
                     {error}<br/>
                 </div>
-                <input className='submitButton' type="submit" value="Login" />
+                <input className='submitButton' type="submit" value="Register" />
             </form>
-            <div className='signUpTextBottom'> 
-                <a>You do not have an account? </a><a className='link' onClick = {() => {props.showRegisterPage(true)}}>Sign up!</a>
+            <div> 
+                <a className='signInTextBottom' >Do You have an account already? </a>
+                <a className='link' onClick = {() => {props.showRegisterPage(false)}}>Sign in!</a>
             </div>
         </div>
     );
@@ -51,6 +61,10 @@ const LoginPage = (props) => {
         setPassword(event.target.value);
     }
 
+    function handleChangePasswordRepeat(event) {
+        setPasswordRepeat(event.target.value);
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -60,6 +74,9 @@ const LoginPage = (props) => {
         else if(password.length <= 5) {
             setError("Password must be longer than 5 characters");
         }
+        else if(password != passwordRepeat) {
+            setError("Passwords must match");
+        }
         else {
             sendData();
         }
@@ -67,28 +84,24 @@ const LoginPage = (props) => {
 
     function sendData(){
         let requestObject = {
-            url: `${config.SERVER_URL}/api/users/login`, 
+            url: `${config.SERVER_URL}/api/users/register`, 
             method: 'POST', 
             data: [{name: 'username', value: username}, {name: 'password', value: password}]
         }
         sendRequest(requestObject)
         .then(response => {
-            if(response.status == 200) {
+            if(response.status == 201) {
               response.text().then(text => {
-                let user = {
-                    username: username,
-                    token: text
-                }
-                props.login(user);
+                props.showRegisterPage(false);
               })
             }
             else {
-                setError('Invalid username or password');
+                setError('This username already exists');
             }
         });
     }
 }
 
-export default LoginPage;
+export default RegisterPage;
 
 

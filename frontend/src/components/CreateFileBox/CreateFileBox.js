@@ -1,24 +1,40 @@
-import React from 'react';
+import React, { useState }  from 'react';
  
+import './CreateFileBox.css'
+
 const CreateFileBox = (props) => {
+
+  const [error, setError] = useState('');
 
   return (
     <div className = 'createFileScreen'>
-        <div className = 'inputBox'>
-            <input id='fileName' type='text'></input>
-            <button onClick={abort}>Abort</button>
-            <button onClick={createFile}>Apply</button>
+        <div className = 'createFileBox'>
+            <div className='createFileLabel'>Enter file name</div>
+            <input id='fileName' className='createFileInput' type='text' placeholder='file name'></input>
+            <a className='errorDiv'>{error}<br/></a>
+            <div className='createFileButtons'>
+              <button className='createFileAbort' onClick={abort}>Abort</button>
+              <button className='createFileApply'onClick={createFile}>Apply</button>
+            </div>
         </div>
     </div>
   );
 
   function createFile() {
       let fileName = document.getElementById('fileName').value;
-      let file = {
-        name: fileName,
-        content: ''
+
+      let existingFile = props.files.find(element => element.name == fileName);
+      if(!existingFile) {
+        let file = {
+          name: fileName,
+          content: ''
+        }
+        props.saveFile(file);
+      } 
+      else {
+        setError('File with given name exists already')
       }
-    props.saveFile(file);
+        
   }
 
   function abort() {

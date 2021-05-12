@@ -51,17 +51,3 @@ app.use(catchErrors);
 app.listen(config.server.port, () => {
     console.log(`Server is listening on port: ${config.server.port}`);
 });
-
-// import { exec } from 'child_process';
-// exec('cd users_projects && cd test_our && make', (err, stdout, stderr) => { //verilator -Wall --cc our.v --exe --build sim_main.cpp
-//   if (err) {
-//     console.log(`nie ma`);
-//     console.log(`stderr: ${stderr}`);
-//     // node couldn't execute the command
-//     return;
-//   }
-
-//   // the *entire* stdout and stderr (buffered)
-//   console.log(`stdout: ${stdout}`);
-//   console.log(`stderr: ${stderr}`);
-// });

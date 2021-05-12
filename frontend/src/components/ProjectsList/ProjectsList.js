@@ -39,9 +39,10 @@ import './ProjectsList.css'
           headers: [{name: 'Authorization', value: `Bearer ${props.user.token}`}]
         }
         sendRequest(requestObject)
-        .then(response => response.json())
         .then(response => {
-            setProjects(response.data)
+          if(response.status == 200) {
+            response.json().then(json => setProjects(json.data))
+          }
         });
       }
 

@@ -17,19 +17,14 @@ export default {
             project.files = [];
         }
         for(let i=0; i<req.files.length; i++) {
-            //const oldFile = await File.findOne({name: req.files[i].originalname});
-            //if(!oldFile || oldFile.projectid != req.body.projectId) {
-                const file = await new File({
-                    name: req.files[i].originalname,
-                    projectid: req.body.projectId,
-                    path: `./users_projects/${req.body.projectId}/${req.files[i].originalname}`
-                }).save();
+            const file = await new File({
+                name: req.files[i].originalname,
+                projectid: req.body.projectId,
+                path: `./users_projects/${req.body.projectId}/${req.files[i].originalname}`
+            }).save();
     
-                project.files.push({name: file.name, fileid: file._id})
-                console.log(`file '${file._id}' created.`);
-            //}
-            //else 
-                //console.log(`file '${oldFile._id}' updated.`);
+            project.files.push({name: file.name, fileid: file._id})
+            console.log(`file '${file._id}' created.`);
         }
         project.save()
         return res.status(201).send({ message: `File was created` });
@@ -43,6 +38,6 @@ export default {
 
     async getContent(req, res) {
         const file = await File.findOne({_id: req.params.id});
-        res.sendFile(file.path, { root: '.' });
+        res.status(200).sendFile(file.path, { root: '.' });
     }
 }

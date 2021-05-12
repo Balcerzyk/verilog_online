@@ -7,6 +7,7 @@ import CreateFileBox from "./components/CreateFileBox/CreateFileBox";
 import ProjectsList from "./components/ProjectsList/ProjectsList";
 import ExecutionResult from "./components/ExecutionResult/ExecutionResult"
 import LoginPage from "./components/LoginPage/LoginPage"
+import RegisterPage from "./components/RegisterPage/RegisterPage"
 import Waveforms from "./components/Waveforms/Waveforms"
 import config from "./config.json";
 import { sendRequest, sendFiles } from './utils';
@@ -22,14 +23,20 @@ function App() {
   const [projectId, setProjectId] = useState('');
   const [showCreateFileBox, setShowCreateFileBox] = useState(false);
   const [showCreateProjectBox, setShowCreateProjectBox] = useState(false);
+  const [showRegisterPage, setShowRegisterPage] = useState(false);
   const [result, setResult] = useState('none');
   const [shouldDraw, setShouldDraw] = useState(false);
+  const [waveforms, setWaveforms] = useState(null);
 
   return (
     <div className="App">
       {
-        !user && 
-        <LoginPage login = {loginUser}/>
+        !user && showRegisterPage &&
+        <RegisterPage showRegisterPage = {(show) => {setShowRegisterPage(show)}}/>
+      }
+      {
+        !user && !showRegisterPage &&
+        <LoginPage login = {loginUser} showRegisterPage = {(show) => {setShowRegisterPage(show)}}/>
       }
       {
         showCreateProjectBox &&
@@ -37,12 +44,13 @@ function App() {
       }
       {
         showCreateFileBox &&
-        <CreateFileBox visibility={setProjectFileVisibility} saveFile={saveFile}/>
+        <CreateFileBox visibility={setProjectFileVisibility} saveFile={saveFile} files={files}/>
       }
       {
         user &&
         !projectName && 
         <div className='appDiv'>
+          <button className='logoutButton' onClick={() => {setUser(null)}}>Log out</button>
           <div className='helloText'>
             <a>Hello {user.username}!</a>
           </div>
@@ -63,7 +71,7 @@ function App() {
       {
         projectName && 
         <div className='buttons'>
-          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([])}}>back to menu</button>
+          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([]); setResult('none')}}>back to menu</button>
           <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
           <button onClick={sendUserFiles}>save project</button><br/>
           <button onClick={execute}>Execute</button>
@@ -78,7 +86,7 @@ function App() {
             <svg className='projectNameUnderlineSvg'>
               <rect className='projectNameUnderlineRect'/>
             </svg>
-            <FileExplorer files={files} changeIndex = {changeCurrentFileIndex}/>
+            <FileExplorer files={files} changeIndex={changeCurrentFileIndex} delete={deleteFile}/>
           </div>
           <div className='editorDiv'>
             <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
@@ -86,7 +94,7 @@ function App() {
           <div className='results'>
             <button className='executionButton' onClick={execute}>Execute</button>
             <ExecutionResult user={user} projectId={projectId} result={result}/>
-            <Waveforms shouldDraw={shouldDraw}/>
+            <Waveforms fileContent={waveforms} shouldDraw={shouldDraw}/>
           </div>
         </div>
       }
@@ -118,7 +126,7 @@ function App() {
   function saveFile(createdFile) {  
     setCurrentFileIndex(files.length)
     setFiles(oldArray => [...oldArray, createdFile]);
-    setShowCreateFileBox(false)   
+    setShowCreateFileBox(false) 
   }
 
   function setProject(project) {
@@ -136,9 +144,13 @@ function App() {
         method: 'GET', 
         headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
       }
-      sendRequest(requestObject).then(response => response.json())
+      sendRequest(requestObject)
       .then(response => {
-        newFile.name = response.data.name;
+        if(response.status == 200) {
+          response.json().then(json => {
+            newFile.name = json.data.name;
+          })
+        } 
       });
 
       requestObject = {
@@ -146,12 +158,15 @@ function App() {
         method: 'GET', 
         headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
       }
-      sendRequest(requestObject).then(response => response.text())
-      .then((body) => {
-        newFile.content = body;
-        setFiles(oldArray => [...oldArray, newFile]);
+      sendRequest(requestObject)
+      .then(response => {
+        if(response.status == 200) {
+          response.text().then(text => {
+            newFile.content = text;
+            setFiles(oldArray => [...oldArray, newFile]);   
+          })
+        } 
       });
-      
     }
   }
 
@@ -179,21 +194,44 @@ function App() {
       data: [{name: 'name', value: projectName}]
     }
     sendRequest(requestObject)
-    .then(response => response.json())
-    .then(result => {
-        setProjectId(result.data._id);
-        setProjectName(projectName);
-        setShowCreateProjectBox(false);
-    })
-    .catch(error => {
-      setShowCreateProjectBox(false);
-      console.log(error)
+    .then( response => {
+      if(response.status == 201) {
+        response.json().then(json => {
+          setProjectId(json.data._id);
+          setProjectName(projectName);
+          setShowCreateProjectBox(false);
+        })
+      } 
     });
+  }
+
+  function deleteFile(index) {
+    let newFilesArray = files;
+    newFilesArray.splice(index, 1);
+    setFiles(newFilesArray);
+  }
+
+  function getWaveforms() {
+    setShouldDraw(false);
+
+    let requestObject = {
+      url: `${config.SERVER_URL}/api/projects/waveforms/${projectId}`, 
+      method: 'GET', 
+      headers: [{name: 'Authorization', value: `Bearer ${user.token}`}],
+    }
+    sendRequest(requestObject)
+    .then( response => {
+      if(response.status == 200) {
+        response.text().then(text => {
+          setWaveforms(text);
+        setShouldDraw(true);
+        })
+      } 
+    })
   }
 
   async function execute() {
     setResult('please wait')
-    setShouldDraw(false);
 
     await sendUserFiles().then(function(response) {
       let requestObject = {
@@ -204,7 +242,7 @@ function App() {
       sendRequest(requestObject).then(response => response.text())
       .then((body) => {
         setResult(body);
-        setShouldDraw(true);
+        getWaveforms();
       }).catch(function(error) {
         console.log(error)
       });;

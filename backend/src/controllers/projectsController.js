@@ -11,11 +11,10 @@ export default {
         return res.status(200).send({data: project});
     },
     async findAll(req, res) {
-        const projects = await Project.find().sort({ createdAt: 'desc' });
+        const projects = await Project.find({'userid': req.user.id}).sort({ createdAt: 'desc' });
         return res.status(200).send({ data: projects });
     },
     async create(req, res) {
-        console.log(req.user)
         if (!fs.existsSync(projectsPath)) {
             console.log("directory 'users_projects' doesn't exists");
             fs.mkdirSync(projectsPath);
@@ -24,7 +23,7 @@ export default {
 
         const project = await new Project({
             name: req.body.name,
-            userid: req.body.userid,
+            userid: req.user.id,
             files: []
         }).save();
 
@@ -33,48 +32,36 @@ export default {
 
         return res.status(201).send({ data: project, message: `Project was created` });
     },
-    async update(req, res) {
-        
-
-    },
-    async delete(req, res) {
-        
-    },
 
     async execute(req, res) {
-        // console.log(res.body.name)
-        // exec(`cd users_projects/aaaq && verilator -Wall --cc our.v --exe --build sim_main.cpp`, (err, stdout, stderr) => {
-        //     if (err) {
-        //         res.send(stderr)
-        //         return;
-        //     }
-        //     exec(`cd users_projects/aaaq/obj_dir && ./Vour`, (err, stdout, stderr) => {
-        //         if (err) {
-        //           res.send(stderr)
-        //           return;
-        //         }
-        //         res.send(stdout)
-        //         return;
-        //       });
-        //     return;
-        //   }); 
-
-        exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop
+        exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop     //cd users_projects/${req.params.id} && make`
             if (err) {
-                res.send(stderr)
+                res.status(422).send(stderr)
                 return;
             }
             exec(`cd users_projects/${req.params.id}/obj_dir && ./Vtop`, (err, stdout, stderr) => {
                 if (err) {
-                  res.send(stderr)
-                  return;
+                    res.status(422).send(stderr)
+                    return;
                 }
-                res.send(stdout)
+                res.status(200).send(stdout)
                 return;
               });
             return;
-          }); 
+          });      
+    },
 
-        //res.send('wyniczek')       
+    async wavefroms(req, res) {
+        let path = `users_projects/${req.params.id}/logs/vlt_dump.vcd`
+
+        fs.access(path, fs.F_OK, (err) => {
+            if (err) {
+                res.status(500);
+                res.send();
+              return
+            } 
+            res.status(200);
+            res.sendFile(path, { root: '.' });
+        }); 
     }
 }
