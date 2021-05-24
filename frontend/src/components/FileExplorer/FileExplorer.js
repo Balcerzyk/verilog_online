@@ -21,8 +21,11 @@ const FileExplorer = (props) => {
         <div>
           <div className='fileDiv' key={`file_${index}`} onClick={(e) => handleClick(index, e)} >
             {file.name}
+            <button className='deleteFileButton' key={`delete_${index}`} onClick={() => {deleteFile(index)}}> 
+              <img className='deleteFileButtonImage' src={'/images/deleteButton.svg'} alt='delete'/>  
+            </button>
           </div> 
-          <button key={`delete_${index}`} onClick={() => {deleteFile(index)}}>delete</button>
+          
         </div>
       ))}
     </div>  

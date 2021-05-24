@@ -49,3 +49,8 @@
     padding: 0.5rem 2rem;
     font: unset;
 }
+
+.deleteProjectButton {
+    background: none;
+    border: none;
+}

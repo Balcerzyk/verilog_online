@@ -13,6 +13,10 @@ import './ProjectsList.css'
       getAllProjects();
     }, []);
 
+    useEffect(() => {
+      getAllProjects();
+    }, [props.deleteProject]);
+
     return (
       <div className = 'projectsListDiv'>        
           {
@@ -24,7 +28,10 @@ import './ProjectsList.css'
                         <rect className='projectRect' />
                       </svg> 
                       <a className='projectName'>{element.name}</a>
-                      <button className='editProjectButton' onClick={() => selectProject(index)}>Edit</button>        
+                      <button className='editProjectButton' onClick={() => selectProject(index)}>Edit</button>
+                      <button className='deleteProjectButton' onClick={() => deleteProject(index)}>
+                        <img src={'/images/deleteButton.svg'} alt='delete'/>  
+                      </button>    
                     </div>
                 ) 
             })
@@ -48,6 +55,10 @@ import './ProjectsList.css'
 
     function selectProject(index) {
         props.setProject(projects[index]);
+    }
+
+    function deleteProject(index) {
+      props.deleteProject(projects[index]);
     }
   }
   

@@ -30,7 +30,24 @@ export default {
         fs.mkdirSync(projectsPath + '/' + project._id);
         console.log(`project '${project._id}' created.`);
 
+        fs.copyFile('src/Makefile_example', `./users_projects/${project._id}/Makefile`, (err) => {
+            if (err) throw err;
+            console.log('Makefile was copied to destination.txt');
+        });
+
         return res.status(201).send({ data: project, message: `Project was created` });
+    },
+    async update(req, res) {
+        
+    },
+    async delete(req, res) {
+        const project = await Project.findOne({_id: req.params.id});
+        console.log(project)
+        if(req.user.id == project.userid) {
+            await project.remove();
+            return res.status(200).send({ message: `Project was removed` });
+        }
+        return res.status(500).send({ message: `Error` });
     },
 
     async execute(req, res) {

@@ -7,5 +7,24 @@
     padding: 3px 8px;
     font-size: 18px;
     color: white;
-    border-radius: 3px;;
+    border-radius: 3px;
+    position:relative;
+    cursor: pointer; 
+}
+
+.deleteFileButton {
+    background: none;
+    border: none;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translate(0, -45%);
+    cursor: auto; 
+}
+
+.deleteFileButtonImage {
+    height: 20px;
+}
+.deleteFileButtonImage:hover {
+    filter: sepia(75%) saturate(1352%) brightness(119%) contrast(119%);
 }

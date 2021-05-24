@@ -9,6 +9,7 @@ import ExecutionResult from "./components/ExecutionResult/ExecutionResult"
 import LoginPage from "./components/LoginPage/LoginPage"
 import RegisterPage from "./components/RegisterPage/RegisterPage"
 import Waveforms from "./components/Waveforms/Waveforms"
+import AlertBox from "./components/AlertBox/AlertBox"
 import config from "./config.json";
 import { sendRequest, sendFiles } from './utils';
 
@@ -27,9 +28,14 @@ function App() {
   const [result, setResult] = useState('none');
   const [shouldDraw, setShouldDraw] = useState(false);
   const [waveforms, setWaveforms] = useState(null);
+  const [alert, setAlert] = useState(null);
 
   return (
     <div className="App">
+      {
+        alert &&
+        <AlertBox text={alert.text} abortFunction={alert.abortFunction} applyFunction={alert.applyFunction}/>
+      }
       {
         !user && showRegisterPage &&
         <RegisterPage showRegisterPage = {(show) => {setShowRegisterPage(show)}}/>
@@ -50,7 +56,14 @@ function App() {
         user &&
         !projectName && 
         <div className='appDiv'>
-          <button className='logoutButton' onClick={() => {setUser(null)}}>Log out</button>
+          <button className='logoutButton' onClick={() => {
+            let alert = {
+              text: "Do you really want to log out?",
+              abortFunction: () => setAlert(null),
+              applyFunction: () => {setUser(null); setAlert(null)}
+            }
+            setAlert(alert);
+          }}>Log out</button>
           <div className='helloText'>
             <a>Hello {user.username}!</a>
           </div>
@@ -65,13 +78,27 @@ function App() {
               <rect className='projectsUnderlineRect'/>
             </svg>
           </div>
-          <ProjectsList user={user} setProject = {setProject}/>
+          <ProjectsList user={user} setProject = {setProject} deleteProject={(project) => {
+            let alert = {
+              text: "Are you sure?",
+              abortFunction: () => setAlert(null),
+              applyFunction: () => {deleteProject(project); setAlert(null)}
+            }
+            setAlert(alert);
+          }}/>
         </div>
       }
       {
         projectName && 
         <div className='buttons'>
-          <button onClick={() => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([]); setResult('none')}}>back to menu</button>
+          <button onClick={() => {
+            let alert = {
+              text: "Are you sure?",
+              abortFunction: () => setAlert(null),
+              applyFunction: () => {setProjectName(''); setProjectId(''); setCurrentFileIndex(0); setFiles([]); setResult('none'); setAlert(null)}
+            }
+            setAlert(alert);
+          }}>back to menu</button>
           <button onClick={() => {setShowCreateFileBox(true)}}>create new file</button>
           <button onClick={sendUserFiles}>save project</button><br/>
           <button onClick={execute}>Execute</button>
@@ -86,7 +113,14 @@ function App() {
             <svg className='projectNameUnderlineSvg'>
               <rect className='projectNameUnderlineRect'/>
             </svg>
-            <FileExplorer files={files} changeIndex={changeCurrentFileIndex} delete={deleteFile}/>
+            <FileExplorer files={files} changeIndex={changeCurrentFileIndex} delete={() => {
+              let alert = {
+                text: "Are you sure?",
+                abortFunction: () => setAlert(null),
+                applyFunction: () => {deleteFile(); setAlert(null)}
+              }
+              setAlert(alert);
+            }}/>
           </div>
           <div className='editorDiv'>
             <Editor file={files[currentFileIndex]} updateContent = {updateContent} language="verilog" />
@@ -168,6 +202,22 @@ function App() {
         } 
       });
     }
+  }
+
+  function deleteProject(project) {
+    let requestObject = {
+      url: `${config.SERVER_URL}/api/projects/${project._id}`, 
+      method: 'DELETE', 
+      headers: [{name: 'Authorization', value: `Bearer ${user.token}`}]
+    }
+    sendRequest(requestObject)
+    .then( response => {
+      if(response.status == 200) {
+        response.json().then(json => {
+          
+        })
+      } 
+    });
   }
 
   function sendUserFiles(){
