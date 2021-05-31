@@ -32,14 +32,26 @@ export default {
 
         fs.copyFile('src/Makefile_example', `./users_projects/${project._id}/Makefile`, (err) => {
             if (err) throw err;
-            console.log('Makefile was copied to destination.txt');
+            console.log('Makefile was copied to destination');
         });
 
         return res.status(201).send({ data: project, message: `Project was created` });
     },
     async update(req, res) {
-        
+        const project = await Project.findOne({_id: req.params.id});
+            if (!project) return next();
+            if(req.body.projectName != null) {
+                project.name = req.body.projectName;
+            }
+            if(req.body.topModule != null) {
+                project.topModule = req.body.topModule;
+            }
+
+            await project.save();
+    
+            return res.status(200).send({ data: project, message: `Project was updated` });    
     },
+
     async delete(req, res) {
         const project = await Project.findOne({_id: req.params.id});
         console.log(project)
@@ -50,7 +62,7 @@ export default {
         return res.status(500).send({ message: `Error` });
     },
 
-    async execute(req, res) {
+    async execute(req, res) {        
         exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop     //cd users_projects/${req.params.id} && make`
             if (err) {
                 res.status(422).send(stderr)
