@@ -10,6 +10,7 @@ export default () => {
     api.get('/', jwtAuthentication, catchAsync(controller.findAll));
     api.get('/execute/:id', jwtAuthentication, catchAsync(controller.execute));
     api.get('/waveforms/:id', jwtAuthentication, catchAsync(controller.wavefroms));
+    api.get('/signals/:id', jwtAuthentication, catchAsync(controller.signals));
     api.post('/', jwtAuthentication, catchAsync(controller.create));
     api.put('/:id', jwtAuthentication, catchAsync(controller.update));
     api.delete('/:id', jwtAuthentication, catchAsync(controller.delete));

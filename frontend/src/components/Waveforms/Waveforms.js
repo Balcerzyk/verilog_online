@@ -45,6 +45,7 @@ const Waveforms = (props) => {
 
   function draw() {
     if(props.fileContent) {
+        console.log(props.fileContent)
         let [signals, times, timeUnit] = getWaveformsInformations(props.fileContent);
 
         signals.forEach((signal, index) => {

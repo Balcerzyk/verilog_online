@@ -56,6 +56,11 @@ body {
     position: relative;
     margin: 40px 20px;
     display: inline-block;
+    position: relative;
+}
+
+.createProjectDiv:hover {
+    filter:  brightness(119%) contrast(119%);
 }
 
 .createProjectSvg {
@@ -67,6 +72,15 @@ body {
     border-radius: 20px;
     -webkit-box-shadow: 0px 5px 9px -4px rgba(0,0,0,0.59); 
     box-shadow: 0px 5px 9px -4px rgba(0,0,0,0.59);
+}
+
+.createProjectImage {
+    min-width: 50px;
+    width: 4vw;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .createProjectRect {
@@ -83,12 +97,31 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.createNewProjectText {
+    width: 80%;
+    color: rgb(228, 228, 228);
+    text-align: center;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.codeEditorScreenDiv {
+    display: grid;
+    height: 100vh;
+    grid-template-rows: 25px;
+    grid-template-columns: minmax(200px, 15vw) minmax(400px, 50vw) minmax(300px, 35vw);
+    grid-template-areas: 
+    "buttons buttons buttons"
+    "menu code results";
+}
 .buttons {
+    grid-area: buttons;
     display: flex;
     justify-content: left;
     align-items: center;
     width: 100%;
-    height: 2%;
     background: black;
 }
 
@@ -96,25 +129,19 @@ body {
     background: transparent;
     color: white;
     border: none;
-
-}
-
-.codeEditorScreenDiv {
-    display: grid;
-    height: 97.8vh;
-    grid-template-columns: minmax(200px, 15vw) minmax(400px, 50vw) minmax(300px, 35vw);
-    grid-template-areas: 'menu code results'
 }
 
 .menuLeft {
-    grid-area: 'menu';
+    grid-area: menu;
     background: #292f3b;
     -webkit-box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.1); 
     box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
 }
 
 .menuProjectName {
     display: inline-block;
+    overflow-wrap: anywhere;
     color: white;
     font-size: 30px;
     width: 100%;
@@ -138,12 +165,12 @@ body {
 }
 
 .editorDiv {
-    grid-area: 'code';
+    grid-area: code;
     height: 100%;
 }
 
 .results {
-    grid-area: 'results';
+    grid-area: results;
     background: #292f3b;
     -webkit-box-shadow: -2px 5px 15px 5px rgba(0,0,0,0.1); 
     box-shadow: -2px 5px 15px 5px rgba(0,0,0,0.1);

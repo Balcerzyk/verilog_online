@@ -53,4 +53,17 @@
 .deleteProjectButton {
     background: none;
     border: none;
+    position: absolute;
+    top: 15%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+}
+
+.deleteProjectButtonImg {
+    min-width: 30px;
+    width: 2vw;
+}
+
+.deleteProjectButtonImg:hover {
+    filter:  brightness(119%) contrast(119%);
 }

@@ -21,7 +21,7 @@ export default function sendRequest(requestObject) {
       headers: headers
     };
 
-    if(requestObject.method == 'POST') {
+    if(requestObject.method == 'POST' || requestObject.method == 'PUT') {
       options.body = urlencoded;
     }
 

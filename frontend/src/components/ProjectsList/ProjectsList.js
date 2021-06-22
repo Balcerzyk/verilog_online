@@ -30,7 +30,7 @@ import './ProjectsList.css'
                       <a className='projectName'>{element.name}</a>
                       <button className='editProjectButton' onClick={() => selectProject(index)}>Edit</button>
                       <button className='deleteProjectButton' onClick={() => deleteProject(index)}>
-                        <img src={'/images/deleteButton.svg'} alt='delete'/>  
+                        <img className='deleteProjectButtonImg' src={'/images/deleteButton.svg'} alt='delete'/>  
                       </button>    
                     </div>
                 ) 
@@ -54,7 +54,11 @@ import './ProjectsList.css'
       }
 
     function selectProject(index) {
-        props.setProject(projects[index]);
+      let project = {
+        id: projects[index]._id,
+        name: projects[index].name
+      }
+        props.setProject(project);
     }
 
     function deleteProject(index) {

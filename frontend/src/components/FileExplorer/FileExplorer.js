@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
  
+import InputBox from "../../components/InputBox/InputBox";
+
 import './FileExplorer.css'
 
 const FileExplorer = (props) => {
 
   const [activeFile, setActiveFile] = useState(0);
   const [refresh, setRefresh] = useState(0);
+  const [showInputBox, setShowInputBox] = useState(false);
 
   useEffect(() => {
     props.changeIndex(activeFile);
@@ -17,15 +20,21 @@ const FileExplorer = (props) => {
 
   return (
     <div className='fileExplorerDiv'>
+      { 
+        showInputBox &&
+        <InputBox visibility={(visibility) => setShowInputBox(visibility)} update={updateFile}/>
+      }
       {props.files.map((file, index) => (
-        <div>
+        <div className='fileDivContainer'>
           <div className='fileDiv' key={`file_${index}`} onClick={(e) => handleClick(index, e)} >
             {file.name}
-            <button className='deleteFileButton' key={`delete_${index}`} onClick={() => {deleteFile(index)}}> 
-              <img className='deleteFileButtonImage' src={'/images/deleteButton.svg'} alt='delete'/>  
-            </button>
           </div> 
-          
+          <button className='editFileButton' key={`edit_${index}`} onClick={() => setShowInputBox(true)}> 
+            edit
+          </button>
+          <button className='deleteFileButton' key={`delete_${index}`} onClick={() => {deleteFile(index)}}> 
+            <img className='deleteFileButtonImage' src={'/images/deleteButton.svg'} alt='delete'/>  
+          </button>
         </div>
       ))}
     </div>  
@@ -45,6 +54,11 @@ const FileExplorer = (props) => {
     document.getElementsByClassName('fileDiv')[activeFile].style.background = 'none';
     document.getElementsByClassName('fileDiv')[props.files.length - 1].style.background = '#63d297';
     setActiveFile(props.files.length - 1)
+  }
+
+  function updateFile(fileName) {
+    props.changeName(activeFile, fileName);
+    setShowInputBox(false);
   }
 
   function deleteFile(index, e) {

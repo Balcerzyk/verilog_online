@@ -15,4 +15,5 @@
     margin: 10px auto 10px auto;
     background: #1d222d;
     font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+    overflow-y: auto;
 }

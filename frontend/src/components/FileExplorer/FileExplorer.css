@@ -2,6 +2,10 @@
     margin: 20px 2%;
 }
 
+.fileDivContainer {
+    position:relative;
+}
+
 .fileDiv {
     margin: 5px auto;
     padding: 3px 8px;

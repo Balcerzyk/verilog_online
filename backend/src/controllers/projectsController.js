@@ -6,7 +6,7 @@ const projectsPath = "./users_projects"
 
 export default {
     async findOne(req, res, next) {
-        const project = await Project.find({id: req.params.id});
+        const project = await Project.findOne({_id: req.params.id});
         if(!project) return next();
         return res.status(200).send({data: project});
     },
@@ -92,5 +92,19 @@ export default {
             res.status(200);
             res.sendFile(path, { root: '.' });
         }); 
+    },
+
+    async signals(req, res) {
+        let path = `users_projects/${req.params.id}/input.json`
+
+        fs.readFile(path, 'utf8', (err, jsonString) => {
+            if (err) {
+                res.status(500);
+                res.send();
+                return
+            }
+            res.status(200);
+            res.send(jsonString);
+        })
     }
 }

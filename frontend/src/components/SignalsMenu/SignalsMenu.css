@@ -1,0 +1,52 @@
+.signalsMenuDiv {
+    color: #acacac;
+    padding: 10px 3%;
+}
+
+.signalsMenuTitle {
+    color: white;
+    font-size: 20px;
+}
+
+.signalsMenuContent {
+    display: grid;
+    margin: 10px auto;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto;
+    grid-template-areas: 
+    'left0 right0'
+    'left1 right1'
+    'left2 right2'
+    'left3 right3'
+    'left4 right4'
+    'left5 right5';
+}
+
+.signalsMenuContent input {
+    max-width: 100%;
+    border: none;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin: 3px 5px;
+}
+
+.signalsMenuButton {
+    display: block;
+    margin: auto 5px auto auto;
+    background: #c9c9c9;
+    color: #1d222d;
+    border: none;
+    border-radius: 100px;
+    font-size: 15px;
+    padding: 0.2rem 1rem;
+    font-family: unset;
+    box-shadow: 0px 2px 14px -4px rgb(0 0 0 / 5%);
+}
+
+.signalErrorDiv {
+    display: block;
+    text-align: center;
+    color: #75787d;
+    margin: 10px auto;
+    font-size: 15px;
+}

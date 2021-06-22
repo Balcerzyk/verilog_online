@@ -24,9 +24,12 @@ const CreateFileBox = (props) => {
       let fileName = document.getElementById('fileName').value;
 
       let existingFile = props.files.find(element => element.name == fileName);
-      if(!existingFile) {
+      if(fileName.includes('.')) {
+        setError('File name cannot include dot')
+      }
+      else if(!existingFile) {
         let file = {
-          name: fileName,
+          name: `${fileName}.v`,
           content: ''
         }
         props.saveFile(file);
