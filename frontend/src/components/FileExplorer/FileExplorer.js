@@ -25,16 +25,30 @@ const FileExplorer = (props) => {
         <InputBox visibility={(visibility) => setShowInputBox(visibility)} update={updateFile}/>
       }
       {props.files.map((file, index) => (
-        <div className='fileDivContainer'>
-          <div className='fileDiv' key={`file_${index}`} onClick={(e) => handleClick(index, e)} >
-            {file.name}
-          </div> 
-          <button className='editFileButton' key={`edit_${index}`} onClick={() => setShowInputBox(true)}> 
-            edit
-          </button>
-          <button className='deleteFileButton' key={`delete_${index}`} onClick={() => {deleteFile(index)}}> 
-            <img className='deleteFileButtonImage' src={'/images/deleteButton.svg'} alt='delete'/>  
-          </button>
+        <div>
+          <div className='fileDivContainer'>
+            <div className='fileDiv' key={`file_${index}`} onClick={(e) => handleClick(index, e)} onDoubleClick={(e) => props.changeTopModule(index)}>
+              {file.name}
+            </div> 
+            <button className='editFileButton' key={`edit_${index}`} onClick={() => setShowInputBox(true)}> 
+            <img className='editFileButtonImage' src={'/images/editButton.svg'} alt='edit'/>  
+            </button>
+            <button className='deleteFileButton' key={`delete_${index}`} onClick={() => {deleteFile(index)}}> 
+              <img className='deleteFileButtonImage' src={'/images/deleteButton.svg'} alt='delete'/>  
+            </button>
+            {
+              props.topModule == index && activeFile != props.topModule &&
+              <div className='sideTopModuleMark'></div>
+            }
+          </div>
+          {
+            props.topModule == index && activeFile == props.topModule &&
+            <div className='topModuleMark'>
+              <a className='topModuleText'>
+                TOPMODULE
+              </a>
+            </div>
+          }
         </div>
       ))}
     </div>  

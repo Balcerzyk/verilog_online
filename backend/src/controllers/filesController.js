@@ -25,12 +25,12 @@ export default {
                 projectid: req.body.projectId,
                 path: `./users_projects/${req.body.projectId}/${req.files[i].originalname}`
             }).save();
-    
+            
             project.files.push({name: file.name, fileid: file._id})
+            project.topmodule = req.body.topModule;
             console.log(`file '${file._id}' created.`);
         }
-        project.save()
-        
+        await project.save()
         //CREATE INPUT SIGNALS FILE
 
         fs.writeFileSync(`./users_projects/${project._id}/input.json`, req.body.signals);
@@ -54,10 +54,28 @@ export default {
         scMainFile.splice(30, 0, signalsAssign);
         scMainFile.splice(24, 0, stringSignals);
         let text = scMainFile.join("\n");
-        
+        text = text.replaceAll('top', `${project.topmodule.replace('.v','')}`);
+        console.log(text)
         fs.writeFile(`./users_projects/${project._id}/sc_main.cpp`, text, function (err) {
         if (err) return console.log(err);
         });
+
+        // UPDATE MAKEFILE
+        fs.copyFile('src/Makefile_example', `./users_projects/${project._id}/Makefile`, (err) => {
+            if (err) throw err;
+            console.log('Makefile was copied to destination');
+        });
+        
+        fs.readFile(`./users_projects/${project._id}/Makefile`, 'utf8', function (err, data) {
+            if (err) {
+              return console.log(err);
+            }
+            let result = data.replaceAll('top', `${project.topmodule.replace('.v','')}`);
+          
+            fs.writeFile(`./users_projects/${project._id}/Makefile`, result, 'utf8', function (err) {
+               if (err) return console.log(err);
+            });
+          });
 
         return res.status(201).send({ message: `File was created` });
     },

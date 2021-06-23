@@ -15,6 +15,8 @@ import { sendRequest, sendFiles } from '../../utils';
   const EditorPage = (props) => {
 
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
+    const [topModule, setTopModule] = useState(0);
+    const [topModuleName, setTopModuleName] = useState(null);
     const [showCreateFileBox, setShowCreateFileBox] = useState(false);
     const [showInputBox, setShowInputBox] = useState(false);
     const [result, setResult] = useState('none');
@@ -28,6 +30,15 @@ import { sendRequest, sendFiles } from '../../utils';
     useEffect(() => {
       setProject(props.project);
     }, []);
+
+    useEffect(() => {   
+      for (let j=0; j<files.length; j++) {
+        if (files[j].name.match(topModuleName)) {
+          setTopModule(j);
+          break;
+        }
+      }   
+    }, [topModuleName]);
 
     return (
         <div>
@@ -69,8 +80,8 @@ import { sendRequest, sendFiles } from '../../utils';
               />
               <div className='menuLeft'>
                   <a className='menuProjectName'>
-                      <button className='editTitleButton' onClick={() => setShowInputBox(true)}>Edit</button>
                       {props.project.name}
+                      <img className='editProjectImage' src={'/images/editButton.svg'} alt='edit' onClick={() => setShowInputBox(true)}/> 
                   </a>
                   <svg className='projectNameUnderlineSvg'>
                       <rect className='projectNameUnderlineRect'/>
@@ -88,9 +99,14 @@ import { sendRequest, sendFiles } from '../../utils';
                     newFilesArray[activeFile].name = filename;
                     setFiles(newFilesArray);
                   }}
+                  topModule = {topModule}
+                  changeTopModule = {(index) => setTopModule(index)}
                   />
-                  <SignalsMenu addSignal={(signal) => {setSignals(oldArray => [...oldArray, signal])}}/>
+                  <div className='createFileButtonDiv'>
+                    <img className='createFileButtonImage' src={'/images/addButton.svg'} alt='edit' onClick={() => setShowCreateFileBox(true)}/>  
+                  </div>
                   <SignalsList signals={signals}/>
+                  <SignalsMenu addSignal={(signal) => {setSignals(oldArray => [...oldArray, signal])}}/>
               </div>
               <div className='editorDiv'>
                   <Editor file={files[currentFileIndex]} updateContent = {(editorContent) => {files[currentFileIndex].content = editorContent}} language="verilog" />
@@ -138,8 +154,8 @@ import { sendRequest, sendFiles } from '../../utils';
         for(let i=0; i<files.length; i++) {
           data.append('files', new Blob([files[i].content]), files[i].name)
         }
-    
         data.append('signals', JSON.stringify(signals));
+        data.append('topModule', files[topModule].name);
     
         let requestObject = {
           url: `${config.SERVER_URL}/api/files`, 
@@ -208,6 +224,7 @@ import { sendRequest, sendFiles } from '../../utils';
             response.json().then(json => {
               let projectData = json.data;
               if(projectData.files.length > 0) {
+
                 for(let i=0; i<projectData.files.length; i++) {
                   let newFile = {
                     name: '',
@@ -241,6 +258,7 @@ import { sendRequest, sendFiles } from '../../utils';
                         setTimeout(() => {  
                           setFiles(oldArray => [...oldArray, newFile]); 
                           if(i == projectData.files.length - 1) {
+                            setTopModuleName(projectData.topmodule);
                             setLoaded(true);
                           }
                         }, 1000); ///////////////////////////////////////////// TODO delete delay

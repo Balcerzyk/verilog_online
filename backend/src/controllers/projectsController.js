@@ -30,11 +30,6 @@ export default {
         fs.mkdirSync(projectsPath + '/' + project._id);
         console.log(`project '${project._id}' created.`);
 
-        fs.copyFile('src/Makefile_example', `./users_projects/${project._id}/Makefile`, (err) => {
-            if (err) throw err;
-            console.log('Makefile was copied to destination');
-        });
-
         return res.status(201).send({ data: project, message: `Project was created` });
     },
     async update(req, res) {
@@ -62,22 +57,30 @@ export default {
         return res.status(500).send({ message: `Error` });
     },
 
-    async execute(req, res) {        
-        exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop     //cd users_projects/${req.params.id} && make`
-            if (err) {
-                res.status(422).send(stderr)
-                return;
-            }
-            exec(`cd users_projects/${req.params.id}/obj_dir && ./Vtop`, (err, stdout, stderr) => {
+    async execute(req, res) {   
+        const project = await Project.findOne({_id: req.params.id});
+        console.log(project)
+        if(project) {
+            exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop     //cd users_projects/${req.params.id} && make`
                 if (err) {
                     res.status(422).send(stderr)
                     return;
                 }
-                res.status(200).send(stdout)
+                exec(`cd users_projects/${req.params.id}/obj_dir && ./V${project.topmodule.replace('.v','')}`, (err, stdout, stderr) => {
+                    if (err) {
+                        res.status(422).send(stderr)
+                        return;
+                    }
+                    res.status(200).send(stdout)
+                    return;
+                  });
                 return;
-              });
+              });      
+        }   
+        else {
+            res.status(422).send()
             return;
-          });      
+        }
     },
 
     async wavefroms(req, res) {
