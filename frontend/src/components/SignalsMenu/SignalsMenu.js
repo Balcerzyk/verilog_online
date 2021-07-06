@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Button from '../Button/Button';
+
 
 import './SignalsMenu.css'
 
@@ -32,7 +34,7 @@ import './SignalsMenu.css'
           </div>
           <div>
               <a className='signalErrorDiv'>{error}<br/></a>
-            <button className='signalsMenuButton' onClick={addSignal}>Add</button>
+              <Button text='Add' onClick={addSignal} />
           </div>
           
       </div>

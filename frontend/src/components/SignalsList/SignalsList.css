@@ -1,10 +1,51 @@
 .signalsListDiv {
     color: #acacac;
     padding: 10px 3%;
-    margin-bottom: 20px;
+}
+.signalsListInsideDiv {
+    margin: 50px auto;
 }
 
 .signalsListTitle {
     color: white;
     font-size: 20px;
+}
+
+.titlesRow {
+    display: grid;
+    width: 100%;
+    font-size: 12px;
+    margin: 10px auto 10px auto;
+    grid-template-columns: 20% 15% 15% 15% 15% 20%;
+    grid-template-areas: 
+    'title1 title2 title3 title4 title5 title6';
+    color: white;
+}
+
+.signalRow {
+    display: grid;
+    width: 100%;
+    font-size: 12px;
+    grid-template-columns: 20% 15% 15% 15% 15% 20%;
+    grid-template-areas: 
+    'name period unit start duty posedge';
+}
+
+.signalsGridDiv {
+    overflow-wrap: anywhere; 
+}
+
+.underlineSvg {
+    display: block;
+    margin: auto;
+    width: 100%;
+    height: 1px;
+    margin: 2px auto 5px auto;
+}
+
+.underlineRect {
+    width: 100%;
+    height: 100%;
+    fill:#acacac;
+    opacity: 40%;
 }

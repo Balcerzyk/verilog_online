@@ -36,18 +36,11 @@
     color: white;
 }
 
-.editProjectButton {
+.buttonPosition {
     position: absolute;
     bottom: 5%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background: #c9c9c9;
-    color: #1d222d;
-    border: none;
-    border-radius: 100px;
-    font-size: 15px;
-    padding: 0.5rem 2rem;
-    font: unset;
+    transform: translate(-50%, 0);
 }
 
 .deleteProjectButton {

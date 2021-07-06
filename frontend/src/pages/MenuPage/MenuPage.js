@@ -3,9 +3,12 @@ import React, { useState } from 'react';
 import ProjectsList from "../../components/ProjectsList/ProjectsList";
 import CreateProjectBox from "../../components/CreateProjectBox/CreateProjectBox";
 import AlertBox from "../../components/AlertBox/AlertBox"
+import Button from '../../components/Button/Button';
 import { sendRequest, sendFiles } from '../../utils';
 
 import config from "../../config.json";
+
+import './MenuPage.css'
 
   const MenuPage = (props) => {
 
@@ -24,16 +27,16 @@ import config from "../../config.json";
                 showCreateProjectBox &&
                 <CreateProjectBox visibility={(visibility) => setShowCreateProjectBox(visibility)} createProject={createProject}/>
             }
-            <button className='logoutButton' onClick={() => {
-                let alert = {
-                    text: "Do you really want to log out?",
-                    abortFunction: () => setAlert(null),
-                    applyFunction: () => {props.logout(); setAlert(null)}
-                }
-                setAlert(alert);
-            }}>
-                Log out
-            </button>
+            <div className='logoutButton'>
+              <Button text='Log Out' onClick={() => {
+                  let alert = {
+                      text: "Do you really want to log out?",
+                      abortFunction: () => setAlert(null),
+                      applyFunction: () => {props.logout(); setAlert(null)}
+                  }
+                  setAlert(alert);
+              }}/>
+            </div>
             <div className='helloText'>
                 <a>Hello {props.user.username}!</a>
             </div>

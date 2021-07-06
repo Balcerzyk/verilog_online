@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 
+import Button from '../Button/Button';
 import config from "../../config.json";
 import { sendRequest } from '../../utils';
 
@@ -28,7 +29,9 @@ import './ProjectsList.css'
                         <rect className='projectRect' />
                       </svg> 
                       <a className='projectName'>{element.name}</a>
-                      <button className='editProjectButton' onClick={() => selectProject(index)}>Edit</button>
+                      <div className='buttonPosition'>
+                        <Button text='Edit' onClick={() => selectProject(index)} />
+                      </div>
                       <button className='deleteProjectButton' onClick={() => deleteProject(index)}>
                         <img className='deleteProjectButtonImg' src={'/images/deleteButton.svg'} alt='delete'/>  
                       </button>    

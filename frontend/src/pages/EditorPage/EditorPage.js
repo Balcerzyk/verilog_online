@@ -11,6 +11,9 @@ import SignalsList from "../../components/SignalsList/SignalsList"
 import EditorTopBar from "../../components/EditorTopBar/EditorTopBar"
 import config from "../../config.json";
 import { sendRequest, sendFiles } from '../../utils';
+import Button from '../../components/Button/Button';
+import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
+import "./EditorPage.css"
 
   const EditorPage = (props) => {
 
@@ -44,7 +47,7 @@ import { sendRequest, sendFiles } from '../../utils';
         <div>
             {
               !loaded &&
-              <div>LOADING</div>
+              <LoadingScreen />
             }
             
             {
@@ -61,7 +64,9 @@ import { sendRequest, sendFiles } from '../../utils';
             }
             {
               loaded && files.length == 0 &&
-              <button onClick={() => setShowCreateFileBox(true)}>Create your first file!</button>
+              <div className='firstFileButtonDiv'>
+                <Button text='Create your first file!' onClick={() => setShowCreateFileBox(true)} />
+              </div>
             }
             {
               loaded && files.length != 0 &&
@@ -112,9 +117,9 @@ import { sendRequest, sendFiles } from '../../utils';
                   <Editor file={files[currentFileIndex]} updateContent = {(editorContent) => {files[currentFileIndex].content = editorContent}} language="verilog" />
               </div>
               <div className='results'>
-                  <button className='executionButton' onClick={execute}>Execute</button>
-                  <ExecutionResult user={props.user} projectId={props.project.id} result={result}/>
-                  <Waveforms fileContent={waveforms} shouldDraw={shouldDraw}/>
+                <Button text='Execute' onClick={execute}/>
+                <ExecutionResult user={props.user} projectId={props.project.id} result={result}/>
+                <Waveforms fileContent={waveforms} shouldDraw={shouldDraw}/>
               </div>
             </div>
             }
@@ -149,6 +154,7 @@ import { sendRequest, sendFiles } from '../../utils';
     }
     
       function sendUserFiles(){
+        setLoaded(false);
         let data  = new FormData();
         data.append('projectId', props.project.id)
         for(let i=0; i<files.length; i++) {
@@ -163,8 +169,12 @@ import { sendRequest, sendFiles } from '../../utils';
           headers: [{name: 'Authorization', value: `Bearer ${props.user.token}`}],
           data: data
         }
-        return sendFiles(requestObject)
-      }
+        return sendFiles(requestObject).then( response => {
+          if(response.status == 201) {
+            setLoaded(true)
+          } 
+        })
+        }
     
       function deleteFile(index) {
         let newFilesArray = files;

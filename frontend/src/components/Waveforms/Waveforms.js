@@ -37,7 +37,7 @@ const Waveforms = (props) => {
         <div className='waveformsDiv'>
         <div className='waveformsCanvasDiv'>
             <canvas id="names" className='waveformsNames' height="2000" width="100" ></canvas>
-            <canvas id="waveforms" className='waveforms' height="2000" width="3000" ></canvas>  
+            <canvas id="waveforms" className='waveforms' height="2000" width="30000" ></canvas>  
         </div>
     </div> 
     </div>
@@ -159,7 +159,8 @@ function drawGraduation(times, timeUnit) {
     let ctx = getCanvasContext(waveformCanvasId);
 
     let scale = canvasWidth / times[times.length - 1];
-
+    let startTime = times[0];
+    
     ctx.strokeStyle = graduationColor;
     ctx.lineWidth = graudationThickness;
 
@@ -168,9 +169,9 @@ function drawGraduation(times, timeUnit) {
 
     ctx.beginPath();
     times.forEach(time => {
-        ctx.fillText(time + timeUnit.unit, time * scale, offset/2);
-        ctx.moveTo(time * scale, offset);
-        ctx.lineTo(time * scale, canvasHeight);
+        ctx.fillText(time + timeUnit.unit, (time - startTime) * scale, offset/2);
+        ctx.moveTo((time - startTime) * scale, offset);
+        ctx.lineTo((time - startTime) * scale, canvasHeight);
     })
     ctx.stroke();
 }
@@ -181,14 +182,15 @@ function drawWaveform(index, signal, times) {
     let baseY = index * distanceBetweenWaveforms + waveformsHeight + offset;
     let y;
     let scale = document.getElementById(waveformCanvasId).width / times[times.length - 1];
+    let startTime = times[0];
 
     ctx.strokeStyle = waveformsColor;
     ctx.lineWidth = waveformsThickness;
     
     ctx.beginPath();
-    ctx.moveTo(times[0] * scale, baseY);
+    ctx.moveTo(0, baseY);
     times.forEach((time, index) => {
-        ctx.lineTo(parseInt(time * scale), y);
+        ctx.lineTo(parseInt((time - startTime) * scale), y);
 
         // drawX(ctx, time, scale, baseY, waveformsHeight);
         // ctx.moveTo(parseInt(time * scale), y);
@@ -208,7 +210,7 @@ function drawWaveform(index, signal, times) {
         else {
             y = baseY - waveformsHeight;
         }
-        ctx.lineTo(parseInt(times[index] * scale), y);
+        ctx.lineTo(parseInt((times[index] - startTime) * scale), y);
 
         ctx.font = graduationFont;
         if((signal.values[index - 1] && signal.values[index - 1] != signal.values[index]) || !index) {
@@ -219,7 +221,7 @@ function drawWaveform(index, signal, times) {
             if(text.length > 9) {
                 text = text.substr(0,6) + '...';
             }
-            ctx.fillText(text, times[index] * scale + 5, baseY - waveformsHeight/2);
+            ctx.fillText(text, (times[index] - startTime) * scale + 5, baseY - waveformsHeight/2);
         }
     });
     ctx.stroke();

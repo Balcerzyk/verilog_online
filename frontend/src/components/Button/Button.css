@@ -1,0 +1,17 @@
+.button {
+    display: block;
+    margin: 1rem auto 1rem auto;
+    padding: 0.5rem 2rem;
+    background: #c9c9c9;
+    color: #1d222d;
+    border: none;
+    border-radius: 100px;
+    font-size: 15px;
+    font: unset;
+    box-shadow: 0px 5px 9px -4px rgb(0 0 0 / 40%);
+}
+
+.button:hover {
+    filter:  brightness(110%);
+    color: teal;
+}

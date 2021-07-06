@@ -28,10 +28,7 @@ const Editor = props => {
 
     // handle 4-space indent on
     if (evt.key === "Tab") {
-      value =
-        value.substring(0, selStartPos) +
-        "    " +
-        value.substring(selStartPos, value.length);
+      value = `${ value.substring(0, selStartPos)}\t`
       evt.currentTarget.selectionStart = selStartPos + 3;
       evt.currentTarget.selectionEnd = selStartPos + 4;
       evt.preventDefault();

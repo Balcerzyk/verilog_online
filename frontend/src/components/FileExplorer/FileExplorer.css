@@ -6,6 +6,11 @@
     position:relative;
 }
 
+.fileDivContainer:hover {
+    background: #292f3b;
+    filter: brightness(115%);
+}
+
 .fileDiv {
     margin: 8px auto 0 auto;
     padding: 3px 8px;

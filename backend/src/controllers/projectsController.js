@@ -59,7 +59,7 @@ export default {
 
     async execute(req, res) {   
         const project = await Project.findOne({_id: req.params.id});
-        console.log(project)
+console.log(project)
         if(project) {
             exec(`cd users_projects/${req.params.id} && make`, (err, stdout, stderr) => { //verilator -Wall --sc --trace --exe sc_main.cpp top.v && make -j -C obj_dir -f Vtop.mk Vtop     //cd users_projects/${req.params.id} && make`
                 if (err) {

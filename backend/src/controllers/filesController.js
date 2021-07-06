@@ -13,7 +13,6 @@ export default {
         return res.status(200).send({ data: files });
     },
     async create(req, res) {
-
         // CREATE PROJECT OBJECT
         const project = await Project.findOne({_id: req.body.projectId});
         if(project) {
@@ -55,7 +54,7 @@ export default {
         scMainFile.splice(24, 0, stringSignals);
         let text = scMainFile.join("\n");
         text = text.replaceAll('top', `${project.topmodule.replace('.v','')}`);
-        console.log(text)
+
         fs.writeFile(`./users_projects/${project._id}/sc_main.cpp`, text, function (err) {
         if (err) return console.log(err);
         });
@@ -90,4 +89,49 @@ export default {
         const file = await File.findOne({_id: req.params.id});
         res.status(200).sendFile(file.path, { root: '.' });
     }
+}
+
+function setInputSignals(path, body) {
+    fs.writeFileSync(`${path}/input.json`, body.signals);
+}
+
+function createSCMain(path, project) {
+    let scMainFile = fs.readFileSync(`./src/sc_main_template.cpp`).toString().split("\n");
+    let inputSignalsFile = fs.readFileSync(`${path}/input.json`);
+    let jsonSignals = JSON.parse(inputSignalsFile);
+    let stringSignals = '';
+    let signalsAssign = '';
+
+    jsonSignals.forEach( signal => {
+        stringSignals += `\tsc_clock ${signal.name}{"${signal.name}", ${signal.period}, SC_${signal.unit}, ${signal.dutyCycle}, ${signal.start}, SC_${signal.unit}, ${signal.posedgeFirst}};\n`;
+        signalsAssign += `\ttop->${signal.name}(${signal.name});\n`
+    });
+
+    scMainFile.splice(30, 0, signalsAssign);
+    scMainFile.splice(24, 0, stringSignals);
+
+    let text = scMainFile.join("\n");
+    text = text.replaceAll('top', `${project.topmodule.replace('.v','')}`);
+
+    fs.writeFile(`${path}/sc_main.cpp`, text, function (err) {
+        if (err) return console.log(err);
+    });
+}
+
+function updateMakeFile(path, project) {
+    fs.copyFile('src/Makefile_example', `${path}/Makefile`, (err) => {
+        if (err) throw err;
+        console.log('Makefile was copied to destination');
+    });
+    
+    fs.readFile(`${path}/Makefile`, 'utf8', function (err, data) {
+        if (err) {
+          return console.log(err);
+        }
+        let result = data.replaceAll('top', `${project.topmodule.replace('.v','')}`);
+      
+        fs.writeFile(`${path}/Makefile`, result, 'utf8', function (err) {
+           if (err) return console.log(err);
+        });
+      });
 }

@@ -1,0 +1,16 @@
+.loadingScreenDiv {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(150, 150,150, 0.7);
+    z-index: 30;
+}
+
+.loadingScreenText {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 35px;
+    color: white;
+}
